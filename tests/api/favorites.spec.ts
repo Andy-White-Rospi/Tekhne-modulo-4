@@ -63,4 +63,51 @@ test.describe('Favorites API (via ApiClient)', () => {
     const response = await apiClient.removeFavorite(5);
     expect(response.status()).toBe(404);
   });
+
+  test('TC-FAV-N01: Lista respeta el orden de favoritos', async ({ apiClient }) => {
+    const responseFirstFavorite = await apiClient.addFavorite(6);
+    expect(responseFirstFavorite.status()).toBe(201);
+    const responseSecondFavorite = await apiClient.addFavorite(2);
+    expect(responseSecondFavorite.status()).toBe(201);
+    const responseThirdFavorite = await apiClient.addFavorite(9);
+    expect(responseThirdFavorite.status()).toBe(201);
+
+    const response = await apiClient.listFavorites();
+    expect(response.ok()).toBeTruthy();
+    const favorites = (await response.json()) as Product[];
+    const favoriteIds = favorites.map((favorite) => favorite.id);
+    expect(favoriteIds).toEqual([6, 2, 9]);
+  });
+
+  test('TC-FAV-N02: favorito se mantiene a pesar de cambiar el filtro', async ({ apiClient }) => {
+    const responseFirstFavorite = await apiClient.addFavorite(1);
+    expect(responseFirstFavorite.status()).toBe(201);
+
+    const responseFirstFilter = await apiClient.listProducts({ category: 'Accesorios' });
+    const products = (await responseFirstFilter.json()) as Product[];
+    expect(products.every((p) => p.category === 'Accesorios')).toBeTruthy();
+    
+    const responseLastFilter = await apiClient.listProducts({ category: 'Laptop' });
+    const productsSecond = (await responseLastFilter.json()) as Product[];
+    expect(productsSecond.every((p) => p.category === 'Laptop')).toBeTruthy();
+
+    const responseFavorites = await apiClient.listFavorites();
+    const favorites = (await responseFavorites.json()) as Product[];
+    expect(favorites).toHaveLength(1);
+    expect(favorites[0].id).toBe(1);
+  });
+
+  test('TC-FAV-N03: eliminar un producto favorito lo quita de la lista', async ({ apiClient }) => {
+    const favoriteResponse = await apiClient.addFavorite(8);
+    expect(favoriteResponse.status()).toBe(201);
+
+    const deleteResponse = await apiClient.deleteProduct(8);
+    expect(deleteResponse.status()).toBe(204);
+
+    const favoritesResponse = await apiClient.listFavorites();
+    expect(favoritesResponse.status()).toBe(200);
+
+    const favorites = (await favoritesResponse.json()) as Product[];
+    expect(favorites).toEqual([]);
+  });
 });
