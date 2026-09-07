@@ -1,6 +1,6 @@
 import { test, expect } from '../../src/fixtures/test-fixtures';
 import { allure } from 'allure-playwright';
-import type { Product } from './types';
+import type { Product, CreateProductInput } from './types';
 
 /**
  * Pruebas de API del catálogo de productos (TechStore marketplace):
@@ -118,4 +118,133 @@ test.describe('Products API (via ApiClient)', () => {
     const check = await apiClient.getProduct(1);
     expect(check.status()).toBe(404);
   });
+
+  // TC-PROD-N01 — Sprint 1 — Prioridad: Alta — Defecto esperado (NEW-01) -  SEGUIVAR
+   // Título: Crear producto con precio negativo debe rechazarse
+   // Precondición: Autenticado como admin.
+   // Pasos: 1) POST /api/products con price = -50. ,resto de campos válidos
+   // Resultado esperado: Esperado 400. Actual conocido: 201 (no valida). Defecto NEW-01.
+   // defecto esperado
+  test('crear producto con precio negativo debe rechazarse', async ({ apiClient }) => {
+    test.fail();
+    await allure.severity('critical');
+ 
+    const response = await apiClient.createProduct({
+      name: 'Producto precio negativo',
+      description: 'Caso TC-PROD-N01',
+      price: -50,
+      category: 'Accesorios',
+      stock: 10,
+    });
+ 
+    expect(response.status()).toBe(400);
+  });
+ 
+  // TC-PROD-N02 — Sprint 1 — Prioridad: Alta — Defecto esperado (NEW-01) -  SEGUIVAR
+  // Título: Crear producto con stock negativo debe rechazarse
+  // Precondición: Autenticado como admin.
+  // Pasos: 1) POST /api/products con stock = -5.  resto de campos válidos
+  // Resultado esperado: Esperado 400. Actual conocido: 201. Defecto NEW-01.
+  // defecto esperado  
+  test('crear producto con stock negativo debe rechazarse', async ({ apiClient }) => {
+    test.fail();
+    await allure.severity('critical');
+ 
+    const response = await apiClient.createProduct({
+      name: 'Producto stock negativo',
+      description: 'Caso TC-PROD-N02',
+      price: 50,
+      category: 'Accesorios',
+      stock: -5,
+    });
+ 
+    expect(response.status()).toBe(400);
+  });
+ 
+  // TC-PROD-N03 — Sprint 1 — Prioridad: Media — Defecto esperado (NEW-01) -  SEGUIVAR
+  // Título: Crear producto con precio no numérico debe rechazarse
+  // Precondición: Autenticado como admin.
+  // Pasos: 1) POST /api/products con price = "gratis" (string).
+  // Resultado esperado: Esperado 400. Actual conocido: 201 con price como string.
+  // defecto esperado  
+  test('crear producto con precio no numérico debe rechazarse', async ({ apiClient }) => {
+    test.fail();
+    await allure.severity('normal');
+ 
+    const response = await apiClient.createProduct({
+      name: 'Producto precio inválido',
+      description: 'Caso TC-PROD-N03',
+      // "gratis" viola el tipo Product.price (number) a propósito: es lo
+      // que hoy la API acepta sin validar.
+      price: 'gratis' as unknown as number,
+      category: 'Accesorios',
+      stock: 10,
+    } as Partial<CreateProductInput>);
+ 
+    expect(response.status()).toBe(400);
+  });
+ 
+  // TC-PROD-N04 — Sprint 1 — Prioridad: Media -  SEGUIVAR
+  test('filtrar por una categoría inexistente devuelve lista vacía', async ({ apiClient }) => {
+    await allure.severity('normal');
+ 
+    const response = await apiClient.listProducts({ category: 'CategoriaQueNoExiste' });
+ 
+    expect(response.status()).toBe(200);
+    const products = (await response.json()) as Product[];
+    expect(products).toHaveLength(0);
+  });
+ 
+  // TC-PROD-N05 — Sprint 1 — Prioridad: Media -  SEGUIVAR
+  test('combina búsqueda de texto + categoría + filtro de ofertas', async ({ apiClient }) => {
+    await allure.severity('normal');
+ 
+    // "Mouse ergonómico" (id 5) pertenece a Accesorios y está en oferta.
+    const response = await apiClient.listProducts({
+      search: 'ergonómico',
+      category: 'Accesorios',
+      deals: true,
+    });
+ 
+    expect(response.ok()).toBeTruthy();
+    const products = (await response.json()) as Product[];
+    expect(products).toHaveLength(1);
+    expect(products[0]).toMatchObject({ name: 'Mouse ergonómico', category: 'Accesorios' });
+  });
+ 
+  // TC-PROD-N06 — Sprint 1 — Prioridad: Media -  SEGUIVAR
+  test('PUT sobre un producto inexistente devuelve 404', async ({ apiClient }) => {
+    await allure.severity('normal');
+ 
+    const response = await apiClient.updateProduct(9999, { price: 10 });
+ 
+    expect(response.status()).toBe(404);
+  });
+ 
+  // TC-PROD-N07 — Sprint 1 — Prioridad: Media -  SEGUIVAR
+  test('DELETE sobre un producto inexistente devuelve 404', async ({ apiClient }) => {
+    await allure.severity('normal');
+ 
+    const response = await apiClient.deleteProduct(9999);
+ 
+    expect(response.status()).toBe(404);
+  });
+ 
+  // TC-PROD-N08 — Sprint 1 — Prioridad: Media  -  SEGUIVAR
+  // La ruta /products/deals no debe interpretarse como /products/:id.
+  // Protege contra una regresión de enrutamiento en Express: si alguien
+  // reordena las rutas y "/:id" queda declarada antes que "/deals",
+  // "deals" se tomaría como id y respondería 404 en vez de la lista.
+  test('la ruta /products/deals no se interpreta como un id de producto', async ({
+    apiClient,
+  }) => {
+    await allure.severity('normal');
+ 
+    const response = await apiClient.listDeals();
+ 
+    expect(response.status()).toBe(200);
+    const products = (await response.json()) as Product[];
+    expect(products).toHaveLength(7);
+  });
+
 });
