@@ -15,6 +15,7 @@
     "test:bugs": "playwright test --project=bug-hunting-api --project=bug-hunting-web",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
+    "test:file": "playwright test",
     "test:debug": "playwright test --debug",
     "report": "playwright show-report",
     "allure:generate": "node scripts/allure-generate.mjs",
