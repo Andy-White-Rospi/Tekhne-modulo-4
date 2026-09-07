@@ -40,7 +40,7 @@ test.describe('Auth API', () => {
   // Pasos: 1) POST /api/auth/login con username="Admin", password="admin123".
   // Resultado esperado: Status 401. El sistema no debe tratar "Admin" como
   // equivalente a "admin" (username case-sensitive).
-  test('login con username en mayúsculas no autentica (case-sensitive)', async ({ apiClient }) => {
+  test('TC-AUTH-N01 login con username en mayúsculas no autentica (case-sensitive)', async ({ apiClient }) => {
     await allure.severity('normal');
 
     // Precondición: store reiniciado (evita interferencia de otros tests)
@@ -51,6 +51,8 @@ test.describe('Auth API', () => {
 
     // Resultado esperado: 401, "Admin" no debe tratarse como equivalente a "admin"
     expect(response.status()).toBe(401);
+    const body = (await response.json()) as { error: string };
+    expect(body).toEqual({ error: 'Credenciales inválidas' });    
   });
  
   // TC-AUTH-N02 — Sprint 1 — Prioridad: Media - Responsable: Seguivar
@@ -58,7 +60,7 @@ test.describe('Auth API', () => {
   // Pasos: 1) POST /api/products con el token válido SIN el prefijo "Bearer ".
   // Datos: Authorization: token-admin-123 (formato incorrecto).
   // Resultado esperado: Status 401 (No autenticado); no debe crear el producto.
-  test('header Authorization sin prefijo "Bearer" se trata como no autenticado', async ({
+  test('TC-AUTH-N02 header Authorization sin prefijo "Bearer" se trata como no autenticado', async ({
     request,
   }) => {
     await allure.severity('normal');
@@ -75,6 +77,8 @@ test.describe('Auth API', () => {
     });
  
     expect(response.status()).toBe(401);
+    const body = (await response.json()) as { error: string };
+    expect(body).toEqual({ error: 'No autenticado' });
   });
 
   // TC-AUTH-N03 — Sprint 1 — Prioridad: Media - Responsable: Seguivar
@@ -82,7 +86,7 @@ test.describe('Auth API', () => {
   // Pasos: 1) POST /api/products con Authorization: Bearer token-que-no-existe-123.
   // Resultado esperado: Status 401 (no hay usuario cuyo token coincida);
   // no se crea el producto.
-  test('token con formato válido pero inexistente es rechazado', async ({ request }) => {
+  test('TC-AUTH-N03 token con formato válido pero inexistente es rechazado', async ({ request }) => {
     await allure.severity('normal');
  
     const response = await request.post('/api/products', {
@@ -97,5 +101,7 @@ test.describe('Auth API', () => {
     });
  
     expect(response.status()).toBe(401);
+    const body = (await response.json()) as { error: string };
+    expect(body).toEqual({ error: 'No autenticado' });    
   });
 });
