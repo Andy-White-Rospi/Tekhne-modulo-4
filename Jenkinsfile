@@ -1,13 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        CI = 'true'
+    }
+
     tools {
         nodejs 'node18'
     }
 
     triggers {
         //githubPush()
-        pollSCM('H/2 * * * *')  
+        pollSCM('H/2 * * * *')
     }
 
     stages {
@@ -46,7 +50,12 @@ pipeline {
                 reportFiles: 'index.html',
                 reportName: 'Playwright Report'
             ])
-            archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+
+            allure includeProperties: false,
+                   jdk: '',
+                   results: [[path: 'allure-results']]
+
+            archiveArtifacts artifacts: 'playwright-report/**, allure-results/**', allowEmptyArchive: true
         }
     }
 }
