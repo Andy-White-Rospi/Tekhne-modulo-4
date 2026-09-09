@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'node18'  
+        nodejs 'node18'
     }
 
     triggers {
-    //    githubPush()  // dispara el build cuando llega un push (requiere webhook configurado)
-    pollSCM('H/2 * * * *')  // revisa cada 2 minutos si hubo cambios
+        //githubPush()
+        pollSCM('H/2 * * * *')  
     }
 
     stages {
@@ -19,26 +19,25 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                sh 'npm ci'
+                bat 'npm ci'
             }
         }
 
         stage('Install Playwright browsers') {
             steps {
-                sh 'npx playwright install --with-deps'
+                bat 'npx playwright install --with-deps'
             }
         }
 
         stage('Run Playwright tests') {
             steps {
-                sh 'npx playwright test'
+                bat 'npx playwright test'
             }
         }
     }
 
     post {
         always {
-            // Publica el reporte HTML de Playwright
             publishHTML(target: [
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
