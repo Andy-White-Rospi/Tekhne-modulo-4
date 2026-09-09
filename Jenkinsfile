@@ -6,7 +6,8 @@ pipeline {
     }
 
     triggers {
-        githubPush()  // dispara el build cuando llega un push (requiere webhook configurado)
+    //    githubPush()  // dispara el build cuando llega un push (requiere webhook configurado)
+    pollSCM('H/2 * * * *')  // revisa cada 2 minutos si hubo cambios
     }
 
     stages {
