@@ -44,7 +44,7 @@ git --version
 Clonar el repositorio:
 
 ```bash
-git clone https://github.com/garySZA/techStore.git
+git clone https://github.com/Andy-White-Rospi/Tekhne-modulo-4.git
 ```
 
 Ingresar al proyecto:
