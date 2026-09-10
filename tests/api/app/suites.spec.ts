@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('valida que suites existe y contiene 4 elementos', async ({ request }) => {
     const response = await request.get('/api/qa/suites');
-    
+
     // Validar Status Code
     expect(response.status()).toBe(200);
 
@@ -19,10 +19,7 @@ test('valida que suites existe y contiene 4 elementos', async ({ request }) => {
 
     // Verificar que ningún elemento sea null
     responseBody.suites.forEach((suite: unknown, index: number) => {
-        expect(
-        suite,
-        `suites[${index}] no debe ser null`
-        ).not.toBeNull();
+        expect(suite, `suites[${index}] no debe ser null`).not.toBeNull();
     });
 });
 
@@ -42,34 +39,34 @@ test('Ejecutar una suite con grep inválido debe devolver 400', async ({ request
         data: {
             suite: 'api',
             bugs: true,
-            grep: "; rm -rf / #"
+            grep: '; rm -rf / #',
         },
     });
 
     expect(response.status()).toBe(400);
 });
 
-test('Habilitar bugs debe devolver bugs en true', async ({ request }) => { 
-    const response = await request.post('/api/config/bugs', { 
-        data: { 
-            enabled: true, 
+test('Habilitar bugs debe devolver bugs en true', async ({ request }) => {
+    const response = await request.post('/api/config/bugs', {
+        data: {
+            enabled: true,
         },
-    }); // Validar código de respuesta 
-    
-    expect(response.status()).toBe(200); 
-    
-    // Obtener y validar el body 
-    const responseBody = await response.json(); 
+    }); // Validar código de respuesta
 
-    expect(responseBody).toHaveProperty('bugs'); 
-    expect(responseBody.bugs).toBe(true); 
+    expect(response.status()).toBe(200);
+
+    // Obtener y validar el body
+    const responseBody = await response.json();
+
+    expect(responseBody).toHaveProperty('bugs');
+    expect(responseBody.bugs).toBe(true);
 });
 
 test('El estado de bugs debe ser false', async ({ request }) => {
     // Activar modo bugs
     const enableResponse = await request.post('/api/config/bugs', {
         data: {
-        enabled: true,
+            enabled: true,
         },
     });
 
@@ -78,7 +75,7 @@ test('El estado de bugs debe ser false', async ({ request }) => {
     // Desactivar modo bugs
     const disableResponse = await request.post('/api/config/bugs', {
         data: {
-        enabled: false,
+            enabled: false,
         },
     });
 
