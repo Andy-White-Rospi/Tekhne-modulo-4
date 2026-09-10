@@ -79,4 +79,4 @@ test.describe('Bug-hunting Web', () => {
     await expect(shopPage.dealBadge(1)).toHaveText('-13%');
   });
 });
-*/
+*///
