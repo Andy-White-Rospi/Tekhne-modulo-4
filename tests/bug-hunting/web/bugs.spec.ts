@@ -1,6 +1,6 @@
-/*import { test, expect } from '../../../src/fixtures/test-fixtures';
+import { test, expect } from '../../../src/fixtures/test-fixtures';
 import { env } from '../../../src/config/env';
-/*
+
 /**
  * Suite "bug-hunting" (didáctica) — Web UI.
  *
@@ -15,7 +15,7 @@ import { env } from '../../../src/config/env';
  * No se usa modo serial: cada test resetea el estado en su beforeEach para
  * que cada bug se evidencie de forma independiente (aunque otro falle).
  */
-/*
+
 test.describe('Bug-hunting Web', () => {
   test.beforeEach(async ({ request, loginPage, shopPage }) => {
     await request.post(`${env.apiBaseURL}/api/test/reset`);
@@ -79,4 +79,3 @@ test.describe('Bug-hunting Web', () => {
     await expect(shopPage.dealBadge(1)).toHaveText('-13%');
   });
 });
-*///
