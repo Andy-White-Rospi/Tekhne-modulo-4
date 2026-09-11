@@ -11,7 +11,7 @@ pipeline {
 
     triggers {
         //githubPush()
-        pollSCM('H/1 * * * *')
+        pollSCM('H/2 * * * *')
     }
 
     stages {
