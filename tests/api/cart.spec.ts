@@ -50,14 +50,14 @@ test.describe('Cart API (via ApiClient)', () => {
     expect(cart.totalPrice).toBe(304.69);
   });
   //DESCOMENTAR
-/*
+
   test('TC-CART-N02: agrega cantidad mayor al stock disponible y es rechazado', async ({
     apiClient,
   }) => {
     const response = await apiClient.addToCart(1, 1000);
     expect([400, 409]).toContain(response.status());
   });
-*/
+
   test('TC-CART-N03: vacia el carrito completo', async ({
     apiClient,
   }) => {
@@ -76,7 +76,7 @@ test.describe('Cart API (via ApiClient)', () => {
     expect(cart.totalPrice).toBe(0);
   });
   //DESCOMENTAR
-/*
+
   test('TC-CART-N04: realiza checkout y valida el stock', async ({
     apiClient,
   }) => {
@@ -96,7 +96,7 @@ test.describe('Cart API (via ApiClient)', () => {
 
     expect(finalProduct.stock).toBe(initialProduct.stock - 2);
   });
-*/
+
   test('agregar el mismo producto acumula la cantidad', async ({ apiClient }) => {
     await apiClient.addToCart(3, 1);
     const response = await apiClient.addToCart(3, 2);
